@@ -8,12 +8,33 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 load_dotenv(find_dotenv())
 
+url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
+
+headers = {
+    'x-rapidapi-key': os.environ.get("RAPIDAPI_KEY"),
+    'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com"
+    }
+
+hot_words = [""]
+
+def get_urban_meaning(word):    #call urban dictionary with speech
+    try:
+        querystring = {"term": word}
+        response = requests.request("GET", url, headers=headers, params=querystring)
+        data_fetched_json = json.loads(response.text)
+        word_meaning = data_fetched_json["list"][0]['definition']
+        return word_meaning
+    except:
+        print("empty word error")
+
+
 r = sr.Recognizer()
 speech = sr.Microphone()
 authenticator = IAMAuthenticator(os.environ.get("IBMAPI_KEY"))
 speech_to_text = SpeechToTextV1(
     authenticator=authenticator
 )
+
 
 speech_to_text.set_service_url(os.environ.get("IBM_URL"))
 
@@ -22,4 +43,19 @@ with speech as source:
     audio_file = r.adjust_for_ambient_noise(source)
     audio_file = r.listen(source)
 speech_recognition_results = speech_to_text.recognize(audio=audio_file.get_wav_data(), content_type='audio/wav').get_result()
-print(json.dumps(speech_recognitiona_results, indent=2))
+
+json_object = json.dumps(speech_recognition_results, indent=2)
+print(json_object)
+json_raw = json.loads(json_object)
+
+extracted_speech = json_raw["results"][0]["alternatives"][0]["transcript"]
+extracted_speech = extracted_speech.split(" ")[0:-1]
+
+for word in extracted_speech:
+    print(get_urban_meaning(word))
+
+
+
+
+
+

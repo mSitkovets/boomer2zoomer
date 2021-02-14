@@ -6,12 +6,12 @@ load_dotenv(find_dotenv())
 
 url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
 
-querystring = {"term":"wat"}
-
 headers = {
     'x-rapidapi-key': os.environ.get("RAPIDAPI_KEY"),
     'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com"
     }
+
+querystring = {"term":"hey"}
 
 response = requests.request("GET", url, headers=headers, params=querystring)
 
