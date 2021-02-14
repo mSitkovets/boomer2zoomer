@@ -5,28 +5,11 @@ import speech_recognition as sr
 from ibm_watson import SpeechToTextV1
 import json
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from urban_dict import pop_up_window, get_urban_meaning
 
 load_dotenv(find_dotenv())
 
-url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
-
-headers = {
-    'x-rapidapi-key': os.environ.get("RAPIDAPI_KEY"),
-    'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com"
-    }
-
 slang_words = ["poggers", "lit", "boomer"]
-
-def get_urban_meaning(word):    #call urban dictionary with speech
-    try:
-        querystring = {"term": word}
-        response = requests.request("GET", url, headers=headers, params=querystring)
-        data_fetched_json = json.loads(response.text)
-        word_meaning = data_fetched_json["list"][0]['definition']
-        return word_meaning
-    except:
-        print("empty word error")
-
 
 r = sr.Recognizer()
 speech = sr.Microphone()
@@ -35,12 +18,10 @@ speech_to_text = SpeechToTextV1(
     authenticator=authenticator
 )
 
-
 speech_to_text.set_service_url(os.environ.get("IBM_URL"))
 
 with speech as source:
     print("say something!!…")
-    audio_file = r.adjust_for_ambient_noise(source)
     audio_file = r.listen(source)
 speech_recognition_results = speech_to_text.recognize(audio=audio_file.get_wav_data(), content_type='audio/wav').get_result()
 
@@ -54,11 +35,11 @@ print(extracted_speech)
 
 for word in extracted_speech:
     if "*" in word:
-        print("profanity!")
+        pop_up_window("profanity!")
     elif word == "dog":
-        print("calling someone dawgg could be inappropriate")
+        pop_up_window("calling someone dawgg could be inappropriate")
     elif word in slang_words:
-        print(get_urban_meaning(word))
+        get_urban_meaning(word)
 
 
 
