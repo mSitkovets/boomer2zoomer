@@ -15,7 +15,7 @@ headers = {
     'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com"
     }
 
-slang_words = ["poggers", "lit", "boomer"]
+slang_words = ["hood", "lit", "boomer"]
 
 def get_urban_meaning(word):    #call urban dictionary with speech
     try:
@@ -29,30 +29,38 @@ def get_urban_meaning(word):    #call urban dictionary with speech
 
 
 r = sr.Recognizer()
-speech = sr.Microphone()
-authenticator = IAMAuthenticator(os.environ.get("IBMAPI_KEY"))
-speech_to_text = SpeechToTextV1(
-    authenticator=authenticator
-)
+# speech = sr.Microphone()
+# authenticator = IAMAuthenticator(os.environ.get("IBMAPI_KEY"))
+# speech_to_text = SpeechToTextV1(
+#     authenticator=authenticator
+# )
 
 
-speech_to_text.set_service_url(os.environ.get("IBM_URL"))
+# speech_to_text.set_service_url(os.environ.get("IBM_URL"))
 
-with speech as source:
-    print("say something!!…")
-    audio_file = r.adjust_for_ambient_noise(source)
-    audio_file = r.listen(source)
-speech_recognition_results = speech_to_text.recognize(audio=audio_file.get_wav_data(), content_type='audio/wav').get_result()
 
-json_object = json.dumps(speech_recognition_results, indent=2)
-print(json_object)
-json_raw = json.loads(json_object)
+with sr.Microphone() as source:
+    # read the audio data from the default microphone
+    audio_data = r.record(source, duration=5)
+    print("Recognizing...")
+    # convert speech to text
+    text = r.recognize_google(audio_data)
 
-extracted_speech = json_raw["results"][0]["alternatives"][0]["transcript"]
-extracted_speech = extracted_speech.split(" ")[0:-1]
-print(extracted_speech)
+# with speech as source:
+#     print("say something!!…")
+#     audio_file = r.adjust_for_ambient_noise(source)
+#     audio_file = r.listen(source)
+# speech_recognition_results = speech_to_text.recognize(audio=audio_file.get_wav_data(), content_type='audio/wav').get_result()
 
-for word in extracted_speech:
+# json_object = json.dumps(text, indent=2)
+# print(json_object)
+# json_raw = json.loads(json_object)
+
+# extracted_speech = json_raw["results"][0]["alternatives"][0]["transcript"]
+text = text.lower().split(" ")[0:-1]
+print(text)
+
+for word in text:
     if "*" in word:
         print("profanity!")
     elif word == "dog":
