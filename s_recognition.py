@@ -15,7 +15,7 @@ headers = {
     'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com"
     }
 
-hot_words = [""]
+slang_words = ["poggers", "lit", "boomer"]
 
 def get_urban_meaning(word):    #call urban dictionary with speech
     try:
@@ -50,9 +50,15 @@ json_raw = json.loads(json_object)
 
 extracted_speech = json_raw["results"][0]["alternatives"][0]["transcript"]
 extracted_speech = extracted_speech.split(" ")[0:-1]
+print(extracted_speech)
 
 for word in extracted_speech:
-    print(get_urban_meaning(word))
+    if "*" in word:
+        print("profanity!")
+    elif word == "dog":
+        print("calling someone dawgg could be inappropriate")
+    elif word in slang_words:
+        print(get_urban_meaning(word))
 
 
 
